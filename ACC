@@ -1,10 +1,11 @@
--- GUI setup
+-- GUI untuk executor yang tidak support CoreGui (seperti Velocity)
 local gui = Instance.new("ScreenGui")
 local button = Instance.new("TextButton")
 local enabled = false
 
-gui.Parent = game.CoreGui
 gui.Name = "AutoAcceptTradeGUI"
+gui.ResetOnSpawn = false
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- diganti dari CoreGui
 
 button.Size = UDim2.new(0, 200, 0, 50)
 button.Position = UDim2.new(0, 20, 0, 100)
@@ -21,7 +22,6 @@ button.MouseButton1Click:Connect(function()
 	button.BackgroundColor3 = enabled and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
 end)
 
--- Function to safely fire remote
 local function fireSafe(remote, ...)
     if remote and remote:IsA("RemoteEvent") then
         pcall(function()
@@ -30,10 +30,10 @@ local function fireSafe(remote, ...)
     end
 end
 
--- Loop
-task.spawn(function()
+-- Ganti task.spawn dengan spawn
+spawn(function()
 	while true do
-		task.wait(1)
+		wait(1)
 		if enabled then
 			local events = game.ReplicatedStorage:FindFirstChild("GameEvents")
 			if events then
