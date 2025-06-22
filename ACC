@@ -1,27 +1,6 @@
--- GUI untuk executor yang tidak support CoreGui (seperti Velocity)
-local gui = Instance.new("ScreenGui")
-local button = Instance.new("TextButton")
-local enabled = false
+-- Auto Accept Trade Script (Tanpa GUI, Langsung Aktif)
 
-gui.Name = "AutoAcceptTradeGUI"
-gui.ResetOnSpawn = false
-gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- diganti dari CoreGui
-
-button.Size = UDim2.new(0, 200, 0, 50)
-button.Position = UDim2.new(0, 20, 0, 100)
-button.Text = "Auto Accept: OFF"
-button.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-button.TextColor3 = Color3.new(1, 1, 1)
-button.Font = Enum.Font.SourceSansBold
-button.TextSize = 20
-button.Parent = gui
-
-button.MouseButton1Click:Connect(function()
-	enabled = not enabled
-	button.Text = "Auto Accept: " .. (enabled and "ON" or "OFF")
-	button.BackgroundColor3 = enabled and Color3.fromRGB(80, 255, 80) or Color3.fromRGB(255, 80, 80)
-end)
-
+-- Fungsi aman untuk panggil remote
 local function fireSafe(remote, ...)
     if remote and remote:IsA("RemoteEvent") then
         pcall(function()
@@ -30,18 +9,17 @@ local function fireSafe(remote, ...)
     end
 end
 
--- Ganti task.spawn dengan spawn
+-- Loop langsung aktif
 spawn(function()
-	while true do
-		wait(1)
-		if enabled then
-			local events = game.ReplicatedStorage:FindFirstChild("GameEvents")
-			if events then
-				fireSafe(events:FindFirstChild("FriendGiftEvent"))
-				fireSafe(events:FindFirstChild("PetGiftingService"))
-				fireSafe(events:FindFirstChild("GiftPet"))
-				fireSafe(events:FindFirstChild("AcceptPetGift"))
-			end
-		end
-	end
+    while true do
+        wait(1) -- Interval waktu antar eksekusi, bisa dikurangi jadi 0.5 jika ingin lebih cepat
+
+        local events = game:GetService("ReplicatedStorage"):FindFirstChild("GameEvents")
+        if events then
+            fireSafe(events:FindFirstChild("FriendGiftEvent"))
+            fireSafe(events:FindFirstChild("PetGiftingService"))
+            fireSafe(events:FindFirstChild("GiftPet"))
+            fireSafe(events:FindFirstChild("AcceptPetGift"))
+        end
+    end
 end)
